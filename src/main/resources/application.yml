@@ -1,0 +1,9 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: webflux-course
+  data:
+    mongodb:
+      uri: mongodb://admin:pass@localhost:27017/WebfluxCourse
