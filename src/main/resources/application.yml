@@ -4,3 +4,8 @@ server:
 spring:
   application:
     name: webflux-course
+  data:
+    mongodb:
+      auto-index-creation: true
+      uri: mongodb://user1:password1@localhost:27017
+      database: WebfluxCourse
