@@ -8,6 +8,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import br.com.webfluxcourse.entities.User;
 import br.com.webfluxcourse.model.request.UserRequest;
+import br.com.webfluxcourse.model.response.UserResponse;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
 		nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
@@ -16,5 +17,7 @@ public interface UserMapper {
 
 	@Mapping(target = "id", ignore = true)
 	User toEntity(final UserRequest request);
+
+	UserResponse toResponse(final User entity);
 
 }

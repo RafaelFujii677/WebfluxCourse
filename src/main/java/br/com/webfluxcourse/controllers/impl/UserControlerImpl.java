@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.webfluxcourse.controllers.UserController;
+import br.com.webfluxcourse.mapper.UserMapper;
 import br.com.webfluxcourse.model.request.UserRequest;
 import br.com.webfluxcourse.model.response.UserResponse;
 import br.com.webfluxcourse.services.UserService;
@@ -19,6 +20,7 @@ import reactor.core.publisher.Mono;
 public class UserControlerImpl implements UserController{
 
 	private final UserService userService;
+	private final UserMapper mapper;
 
 	@Override
 	public ResponseEntity<Mono<Void>> save(final UserRequest request) {
@@ -26,8 +28,8 @@ public class UserControlerImpl implements UserController{
 	}
 
 	@Override
-	public ResponseEntity<Mono<UserResponse>> findOneById(String id) {
-		return null;
+	public ResponseEntity<Mono<UserResponse>> findOneById(final String id) {
+		return ResponseEntity.ok().body(userService.findOneById(id).map(mapper::toResponse));
 	}
 
 	@Override
