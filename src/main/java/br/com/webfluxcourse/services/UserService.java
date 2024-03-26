@@ -6,6 +6,7 @@ import br.com.webfluxcourse.entities.User;
 import br.com.webfluxcourse.mapper.UserMapper;
 import br.com.webfluxcourse.model.request.UserRequest;
 import br.com.webfluxcourse.repositories.UserRepository;
+import br.com.webfluxcourse.services.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
@@ -21,7 +22,8 @@ public class UserService {
 	}
 
 	public Mono<User> findOneById(final String id){
-		return userRepository.findOneById(id);
+		return userRepository.findOneById(id).switchIfEmpty(Mono.error(
+				new ObjectNotFoundException(String.format("Object not found. id: %s, Type: %s", id, User.class.getSimpleName()))));
 	}
 
 }
