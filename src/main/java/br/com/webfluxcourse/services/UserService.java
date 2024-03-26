@@ -23,8 +23,7 @@ public class UserService {
 	}
 
 	public Mono<User> findOneById(final String id){
-		return userRepository.findOneById(id).switchIfEmpty(Mono.error(
-				new ObjectNotFoundException(String.format("Object not found. id: %s, Type: %s", id, User.class.getSimpleName()))));
+		return handleNotFound(userRepository.findOneById(id), id);
 	}
 
 	public Flux<User> findAll(){
@@ -35,5 +34,14 @@ public class UserService {
 		return findOneById(id)
 				.map(entity -> userMapper.toEntity(userRequest, entity))
 				.flatMap(userRepository::save);
+	}
+
+	public Mono<User> delete(final String id){
+		return handleNotFound(userRepository.findOneByIdAndRemove(id), id);
+	}
+
+	private <T> Mono<T> handleNotFound(Mono<T> mono, String id){
+		return mono.switchIfEmpty(Mono.error(
+				new ObjectNotFoundException(String.format("Object not found. id: %s, Type: %s", id, User.class.getSimpleName()))));
 	}
 }
