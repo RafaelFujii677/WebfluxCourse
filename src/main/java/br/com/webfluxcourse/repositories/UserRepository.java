@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import br.com.webfluxcourse.entities.User;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
@@ -19,6 +20,10 @@ public class UserRepository {
 
 	public Mono<User> findOneById(String id) {
 		return mongoTemplate.findById(id, User.class);
+	}
+
+	public Flux<User> findAll() {
+		return mongoTemplate.findAll(User.class);
 	}
 
 }

@@ -8,6 +8,7 @@ import br.com.webfluxcourse.model.request.UserRequest;
 import br.com.webfluxcourse.repositories.UserRepository;
 import br.com.webfluxcourse.services.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -26,4 +27,7 @@ public class UserService {
 				new ObjectNotFoundException(String.format("Object not found. id: %s, Type: %s", id, User.class.getSimpleName()))));
 	}
 
+	public Flux<User> findAll(){
+		return userRepository.findAll();
+	}
 }
