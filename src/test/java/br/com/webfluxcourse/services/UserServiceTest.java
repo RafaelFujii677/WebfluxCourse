@@ -1,5 +1,6 @@
 package br.com.webfluxcourse.services;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -16,6 +17,7 @@ import br.com.webfluxcourse.entities.User;
 import br.com.webfluxcourse.mapper.UserMapper;
 import br.com.webfluxcourse.model.request.UserRequest;
 import br.com.webfluxcourse.repositories.UserRepository;
+import br.com.webfluxcourse.services.exceptions.ObjectNotFoundException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -108,4 +110,14 @@ public class UserServiceTest {
 		Mockito.verify(repository, times(1)).findOneByIdAndRemove(anyString());
 	}
 
+	@Test
+	void TestHandleNotFound() {
+		when(repository.findOneById(anyString())).thenReturn(Mono.empty());
+		try {
+			service.findOneById("123").block();
+		} catch (Exception e) {
+			assertEquals(ObjectNotFoundException.class, e.getClass());
+			assertEquals(String.format("Object not found. id: %s, Type: %s", "123", User.class.getSimpleName()), e.getMessage());
+		}
+	}
 }
