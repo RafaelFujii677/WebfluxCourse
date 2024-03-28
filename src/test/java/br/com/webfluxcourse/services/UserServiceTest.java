@@ -1,6 +1,7 @@
 package br.com.webfluxcourse.services;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
@@ -29,7 +30,7 @@ public class UserServiceTest {
 	@InjectMocks private UserService service;
 
 	@Test
-	void save() {
+	void testSave() {
 		UserRequest request = new UserRequest("Valdir", "valdir@gmail.com", "123");
 		User entity = User.builder().build();
 
@@ -39,10 +40,24 @@ public class UserServiceTest {
 		Mono<User> result = service.save(request);
 
 		StepVerifier.create(result)
-			.expectNextMatches(Objects::nonNull)
+			.expectNextMatches(user -> user.getClass() == User.class)
 			.expectComplete()
 			.verify();
 
 		Mockito.verify(repository, times(1)).save(any(User.class));
+	}
+
+	@Test
+	void testFindOneById() {
+		when(repository.findOneById(anyString())).thenReturn(Mono.just(User.builder().id("1234").build()));
+
+		Mono<User> result = service.findOneById("123");
+
+		StepVerifier.create(result)
+			.expectNextMatches(user -> user.getClass() == User.class && user.getId() == "1234")
+			.expectComplete()
+			.verify();
+
+		Mockito.verify(repository, times(1)).findOneById(anyString());
 	}
 }
