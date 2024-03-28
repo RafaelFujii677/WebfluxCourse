@@ -80,7 +80,7 @@ public class UserServiceTest {
 		User entity = User.builder().build();
 
 		when(mapper.toEntity(any(UserRequest.class), any(User.class))).thenReturn(entity);
-		when(repository.findOneById(any(String.class))).thenReturn(Mono.just(entity));
+		when(repository.findOneById(anyString())).thenReturn(Mono.just(entity));
 		when(repository.save(any(User.class))).thenReturn(Mono.just(entity));
 
 		Mono<User> result = service.update("123", request);
@@ -92,4 +92,20 @@ public class UserServiceTest {
 
 		Mockito.verify(repository, times(1)).save(any(User.class));
 	}
+
+	@Test
+	void testDelete() {
+		User entity = User.builder().build();
+		when(repository.findOneByIdAndRemove(anyString())).thenReturn(Mono.just(entity));
+
+		Mono<User> result = service.delete("123");
+
+		StepVerifier.create(result)
+			.expectNextMatches(user -> user.getClass() == User.class)
+			.expectComplete()
+			.verify();
+
+		Mockito.verify(repository, times(1)).findOneByIdAndRemove(anyString());
+	}
+
 }
