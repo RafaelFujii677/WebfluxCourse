@@ -142,4 +142,16 @@ public class UserControllerImplTest {
 		verify(service).update(anyString(), any(UserRequest.class));
 		verify(mapper).toResponse(any(User.class));
 	}
+
+	@Test
+	@DisplayName("Test delete endpoint with success")
+	void testDeleteWithSuccess() {
+		when(service.delete(anyString())).thenReturn(just(User.builder().build()));
+
+		webTestClient.delete().uri("/users/" + ID)
+			.exchange()
+			.expectStatus().isOk();
+
+		verify(service).delete(anyString());
+	}
 }
