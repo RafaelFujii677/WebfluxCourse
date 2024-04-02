@@ -29,6 +29,11 @@ import br.com.webfluxcourse.services.UserService;
 @AutoConfigureWebTestClient
 public class UserControllerImplTest {
 
+	private static final String ID = "123456";
+	private static final String NAME = "Valdir";
+	private static final String PASSWORD = "123";
+	private static final String EMAIL = "valdir@gmail.com";
+
 	@Autowired
 	private WebTestClient webTestClient;
 
@@ -39,7 +44,7 @@ public class UserControllerImplTest {
 	@Test
 	@DisplayName("Test endpoint save with success")
 	void testSaveWithSuccess() {
-		final var request = new UserRequest("Valdir", "valdir@gmail.com", "123");
+		final var request = new UserRequest(NAME, EMAIL, PASSWORD);
 
 		when(service.save(any(UserRequest.class))).thenReturn(just(User.builder().build()));
 
@@ -55,7 +60,7 @@ public class UserControllerImplTest {
 	@Test
 	@DisplayName("Test endpoint save with bad request")
 	void testSaveWithBadRequest() {
-		final var request = new UserRequest(" Valdir", "valdir@gmail.com", "123");
+		final var request = new UserRequest(NAME.concat(" "), EMAIL, PASSWORD);
 
 		webTestClient.post().uri("/users")
 			.contentType(APPLICATION_JSON)
@@ -74,19 +79,18 @@ public class UserControllerImplTest {
 	@Test
 	@DisplayName("Test find by id endpoint with success")
 	void findByIdWithSuccess() {
-		final var id = "123456";
-		final var userResponse = new UserResponse(id, "Valdir", "valdir@gmail.com", "123");
+		final var userResponse = new UserResponse(ID, NAME, EMAIL, PASSWORD);
 		when(service.findOneById(anyString())).thenReturn(just(User.builder().build()));
 		when(mapper.toResponse(any(User.class))).thenReturn(userResponse);
 
-		webTestClient.get().uri("/users/" + id)
+		webTestClient.get().uri("/users/" + ID)
 			.accept(APPLICATION_JSON)
 			.exchange()
 			.expectStatus().isOk()
 			.expectBody()
-			.jsonPath("$.id").isEqualTo(id)
-			.jsonPath("$.name").isEqualTo("Valdir")
-			.jsonPath("$.email").isEqualTo("valdir@gmail.com")
-			.jsonPath("$.password").isEqualTo("123");
+			.jsonPath("$.id").isEqualTo(ID)
+			.jsonPath("$.name").isEqualTo(NAME)
+			.jsonPath("$.email").isEqualTo(EMAIL)
+			.jsonPath("$.password").isEqualTo(PASSWORD);
 	}
 }
