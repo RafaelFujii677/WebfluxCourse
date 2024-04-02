@@ -4,8 +4,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.web.reactive.function.BodyInserters.fromValue;
 import static reactor.core.publisher.Mono.just;
 
@@ -24,6 +24,7 @@ import br.com.webfluxcourse.mapper.UserMapper;
 import br.com.webfluxcourse.model.request.UserRequest;
 import br.com.webfluxcourse.model.response.UserResponse;
 import br.com.webfluxcourse.services.UserService;
+import reactor.core.publisher.Flux;
 
 @SpringBootTest
 @AutoConfigureWebTestClient
@@ -78,7 +79,7 @@ public class UserControllerImplTest {
 
 	@Test
 	@DisplayName("Test find by id endpoint with success")
-	void findByIdWithSuccess() {
+	void testFindByIdWithSuccess() {
 		final var userResponse = new UserResponse(ID, NAME, EMAIL, PASSWORD);
 		when(service.findOneById(anyString())).thenReturn(just(User.builder().build()));
 		when(mapper.toResponse(any(User.class))).thenReturn(userResponse);
@@ -92,5 +93,23 @@ public class UserControllerImplTest {
 			.jsonPath("$.name").isEqualTo(NAME)
 			.jsonPath("$.email").isEqualTo(EMAIL)
 			.jsonPath("$.password").isEqualTo(PASSWORD);
+	}
+
+	@Test
+	@DisplayName("Test find all endpoint with success")
+	void testFindAllWithSuccess() {
+		final var userResponse = new UserResponse(ID, NAME, EMAIL, PASSWORD);
+		when(service.findAll()).thenReturn(Flux.just(User.builder().build()));
+		when(mapper.toResponse(any(User.class))).thenReturn(userResponse);
+
+		webTestClient.get().uri("/users")
+			.accept(APPLICATION_JSON)
+			.exchange()
+			.expectStatus().isOk()
+			.expectBody()
+			.jsonPath("$.[0].id").isEqualTo(ID)
+			.jsonPath("$.[0].name").isEqualTo(NAME)
+			.jsonPath("$.[0].email").isEqualTo(EMAIL)
+			.jsonPath("$.[0].password").isEqualTo(PASSWORD);
 	}
 }
